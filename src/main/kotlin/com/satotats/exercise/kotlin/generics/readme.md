@@ -2,7 +2,7 @@
 
 Java/Kotlinのジェネリクスにおける変性は、**「不変」**  
 String型はObject型のサブタイプだが、  
-List<Object>へのList<String>の代入、またその逆は言語仕様として不可。
+List\<Object\>へのList\<String\>の代入、またその逆は言語仕様として不可。
 
 これは以下のような型安全でない操作を防止するための仕様。
 
@@ -85,7 +85,7 @@ superList.first() // ひとつめの要素を取得
 kotlinにおける`out`宣言は、  
 この「read用途においては問題が発生しない」という前提をふまえ  
 「このジェネリクス型はread(out)用途でしか使わない」ことを宣言することで  
-List<SuperClass>へのList<SubClass>に代表されるような代入制約を緩めるために利用する。
+List\<SuperClass\>へのList\<SubClass\>の代入に代表される様な代入制約を緩めるために利用する。
 ```kotlin
 fun main() {
     val subList = mutableListOf<String>()
