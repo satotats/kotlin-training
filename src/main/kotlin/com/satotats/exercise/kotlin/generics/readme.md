@@ -85,7 +85,7 @@ superList.first() // ひとつめの要素を取得
 kotlinにおける`out`宣言は、  
 この「read用途においては問題が発生しない」という前提をふまえ  
 「このジェネリクス型はread(out)用途でしか使わない」ことを宣言することで  
-List\<SuperClass\>へのList\<SubClass\>の代入に代表される様な代入制約を緩めるために利用する。
+List\<SuperClass\>へのList\<SubClass\>の代入に代表される様な代入制約を緩める(「共変」の変性とする)ために利用する。
 ```kotlin
 fun main() {
     val subList = mutableListOf<String>()
