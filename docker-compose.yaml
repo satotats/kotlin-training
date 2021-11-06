@@ -1,0 +1,9 @@
+version: "3"
+services:
+  db:
+    container_name: "satotats-db"
+    build: ./db
+    ports:
+      - "3306:3306"
+    env_file: db/.env
+#    restart: 'always' PC起動時に勝手にコンテナを開始しない
