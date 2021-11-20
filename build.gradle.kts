@@ -1,6 +1,6 @@
 plugins {
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
-    id("org.jetbrains.kotlin.jvm") version "1.5.31"
+    id("org.jetbrains.kotlin.jvm") version "1.6.0"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -26,11 +26,15 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao")
     implementation("org.jetbrains.exposed:exposed-jdbc") // essential for using exposed(without this, the application wont start)
     implementation("org.jetbrains.exposed:exposed-java-time")
-}
 
-application {
-    // Define the main class for the application.
-    mainClass.set("com.satotats.AppKt")
+    /* unit testing */
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
+    implementation("ch.qos.logback:logback-classic:1.2.3")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+
+
+    implementation("com.h2database:h2:1.4.200")
 }
 
 sourceSets.main {
