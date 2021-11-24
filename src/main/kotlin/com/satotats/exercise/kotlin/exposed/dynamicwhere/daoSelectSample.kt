@@ -1,6 +1,6 @@
 package com.satotats.exercise.kotlin.exposed.dynamicwhere
 
-import com.satotats.exercise.kotlin.exposed.loading.connectToDB
+import com.satotats.exercise.kotlin.exposed.connectToDB
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

@@ -1,5 +1,6 @@
 package com.satotats.exercise.kotlin.exposed.loading
 
+import com.satotats.exercise.kotlin.exposed.connectToDB
 import mu.KotlinLogging
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -37,11 +38,6 @@ fun prepare(): EntityID<Int> {
     return transaction { insert() }
         .also { log.info { "-----------以上、準備------------" } }
 }
-
-fun connectToDB() = Database.connect(
-    url = "jdbc:h2:file:~/test", // 何の変哲もないh2
-    driver = "org.h2.Driver"
-)
 
 fun insert(): EntityID<Int> =
     ParentEntity.new { name = "parentName" }
