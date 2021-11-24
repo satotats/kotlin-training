@@ -1,5 +1,6 @@
-package com.satotats.exercise.kotlin.exposed
+package com.satotats.exercise.kotlin.exposed.dynamicwhere
 
+import com.satotats.exercise.kotlin.exposed.loading.connectToDB
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -8,6 +9,7 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.compoundAnd
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 
 data class Person(
     val name: String?,
@@ -47,7 +49,7 @@ fun selectByDSL(name: String?, hobby: String?): List<Person> {
 
 fun selectByDao(name: String?, hobby: String?): List<Person> {
     val entities = PersonEntity.find {
-        mutableListOf<Op<Boolean>>().apply {
+        mutableListOf<Op<Boolean>>(Op.TRUE).apply {
             name?.let {
                 add(Persons.name eq it)
             }
@@ -57,4 +59,12 @@ fun selectByDao(name: String?, hobby: String?): List<Person> {
         }.compoundAnd()
     }
     return entities.map { it.toModel() }
+}
+
+fun main() {
+    connectToDB()
+    val res = transaction {
+        selectByDao("ビル・ゲイツ", null)
+    }
+    println(res)
 }
