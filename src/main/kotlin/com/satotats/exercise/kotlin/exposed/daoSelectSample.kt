@@ -47,18 +47,14 @@ fun selectByDSL(name: String?, hobby: String?): List<Person> {
 
 fun selectByDao(name: String?, hobby: String?): List<Person> {
     val entities = PersonEntity.find {
-        val where = mutableListOf<Op<Boolean>>()
-
-        name?.let {
-            where.add(Persons.name eq it)
-        }
-
-        hobby?.let {
-            where.add(Persons.hobby eq it)
-        }
-
-        where.compoundAnd()
+        mutableListOf<Op<Boolean>>().apply {
+            name?.let {
+                add(Persons.name eq it)
+            }
+            hobby?.let {
+                add(Persons.hobby eq it)
+            }
+        }.compoundAnd()
     }
-
     return entities.map { it.toModel() }
 }
