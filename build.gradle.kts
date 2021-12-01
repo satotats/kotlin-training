@@ -27,6 +27,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc") // essential for using exposed(without this, the application wont start)
     implementation("org.jetbrains.exposed:exposed-java-time")
 
+    /* di */
+    implementation("io.insert-koin:koin-core:3.1.4")
+
     /* unit testing */
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
