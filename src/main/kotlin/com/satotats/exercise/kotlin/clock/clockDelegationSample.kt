@@ -7,19 +7,27 @@ import org.koin.dsl.module
 import java.time.*
 
 interface ClockReference {
-   val clock: Clock
+    val clock: Clock
 }
 
-object ClockProvider : ClockReference, KoinComponent {
+class ClockProvider : ClockReference, KoinComponent {
     override val clock: Clock by inject()
 }
+
+//object ClockProvider : ClockReference, KoinComponent {
+//    override val clock: Clock by inject()
+//}
+
+// objectでも類似のことができるが、
+// objectだとjvmのいち起動で1インスタンスしか生成されない(singleton)都合、
+// 連続実行されるテストでclockの差し替えなどが(シンプルな方法では)できなくなってしまう...。
 
 interface ISomething {
     fun doSomethingWithDate()
 }
 
 // 実装するinterfaceに ClockReference を追加する
-class Something : ISomething, ClockReference by ClockProvider {
+class Something : ISomething, ClockReference by ClockProvider() {
     override fun doSomethingWithDate() {
         val today = LocalDate.now(clock) // ClockReferenceのフィールドを参照
         println("Today is $today. Everything is fine.")
