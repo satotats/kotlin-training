@@ -6,7 +6,6 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object ParentTable : IntIdTable("parent") {
@@ -32,21 +31,23 @@ class ChildEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by ChildTable.name
 }
 
-fun prepare(): EntityID<Int> {
+fun prepare(): List<EntityID<Int>> {
     log.info { "-----------以下、準備------------" }
     connectToDB()
     return transaction { insert() }
         .also { log.info { "-----------以上、準備------------" } }
 }
 
-fun insert(): EntityID<Int> =
-    ParentEntity.new { name = "parentName" }
-        .also {
+fun insert(): List<EntityID<Int>> = List(2) {
+    ParentEntity.new { name = "parent${it + 1}" }
+        .also { parent ->
             ChildEntity.new {
-                parent = it
-                name = "childName"
+                this.parent = parent
+                this.name = "${parent.name}.child"
             }
         }
         .let { it.id }
+}
+
 
 val log = KotlinLogging.logger("Logger ") // Exposedのlogger名と同じ高さのお名前にしたかっただけ
