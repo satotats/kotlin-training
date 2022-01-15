@@ -1,36 +1,62 @@
 package com.satotats.exercise.kotlin.coroutine
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import mu.KotlinLogging
+import java.time.Clock
+
+private val log = KotlinLogging.logger { }
 
 object TokenHolder {
-    private val api = SomeApi()
-    private lateinit var someToken: String
+    private val clock: Clock = Clock.systemDefaultZone()
+    private val api = SomeApi(clock)
 
-    private var cnt: Int = 0
+    private val channel = Channel<SomeToken>()
 
-    fun getToken() = runBlocking {
-        println(cnt)
-        if (!::someToken.isInitialized || cnt++ % 3 == 0) {
-            someToken = api.heavyCall()
+    init {
+        runBlocking {
+            log.info("init start")
+            channel.send(api.heavyCall())
+            log.info("init finish")
         }
-        return@runBlocking someToken
+    }
+
+    suspend fun getToken(): String = coroutineScope {
+        async {
+            var token = channel.receive()
+            if (clock.millis() > token.expiredOn) {
+                token = api.heavyCall()
+            }
+            channel.send(token)
+            log.info("send ${token.value}")
+
+            return@async token.value
+        }.await()
     }
 }
 
-class SomeApi() {
+
+// tokenを取得中の場合、取得の終了まで読み込みを停止させたい
+class SomeApi(private val clock: Clock) {
     private var version: Int = 1
-    suspend fun heavyCall(): String {
-        print("toooooooooooooooooooo heavy, baby: ")
+    suspend fun heavyCall(): SomeToken {
+        log.info("heavyCall called")
         delay(100)
-        return "token v" + version++
+        return SomeToken("token v" + version++, clock.millis())
     }
 }
 
-fun main() {
-    repeat(100) {
-        Thread {
-            println(TokenHolder.getToken())
-        }.start()
+data class SomeToken(
+    val value: String,
+    val createdAt: Long
+) {
+    val expiredOn = createdAt + 10
+}
+
+fun main() = runBlocking {
+    repeat(250) {
+        launch {
+            log.info("got "+ TokenHolder.getToken())
+        }
     }
 }
