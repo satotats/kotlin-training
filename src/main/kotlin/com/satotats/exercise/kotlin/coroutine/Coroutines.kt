@@ -1,7 +1,9 @@
 package com.satotats.exercise.kotlin.coroutine
 
-import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.time.Clock
 
@@ -21,20 +23,11 @@ object TokenHolder {
         }
     }
 
-    suspend fun getToken(): String = coroutineScope {
-        async {
-            var token = channel.receive()
-            if (clock.millis() > token.expiredOn) {
-                token = api.heavyCall()
-            }
-            channel.send(token)
-            log.info("send ${token.value}")
-
-            return@async token.value
-        }.await()
-    }
+    suspend fun getToken(): String = channel.receive()
+        .let { if (clock.millis() > it.expiredOn) api.heavyCall() else it }
+        .also { channel.send(it) }
+        .let { token -> token.value }
 }
-
 
 // tokenを取得中の場合、取得の終了まで読み込みを停止させたい
 class SomeApi(private val clock: Clock) {
@@ -56,7 +49,7 @@ data class SomeToken(
 fun main() = runBlocking {
     repeat(250) {
         launch {
-            log.info("got "+ TokenHolder.getToken())
+            log.info("got " + TokenHolder.getToken())
         }
     }
 }
